@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlkemyChallenge.Migrations
 {
     [DbContext(typeof(DbContextModel))]
-    [Migration("20211027003340_InitialCreate")]
+    [Migration("20211031065833_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,6 +48,21 @@ namespace AlkemyChallenge.Migrations
                     b.ToTable("Characters");
                 });
 
+            modelBuilder.Entity("AlkemyChallenge.Model.Character_Movie", b =>
+                {
+                    b.Property<int>("CharacterId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MovieSerieId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CharacterId", "MovieSerieId");
+
+                    b.HasIndex("MovieSerieId");
+
+                    b.ToTable("Character_Movies");
+                });
+
             modelBuilder.Entity("AlkemyChallenge.Model.Genre", b =>
                 {
                     b.Property<int>("Id")
@@ -79,9 +94,6 @@ namespace AlkemyChallenge.Migrations
                     b.Property<DateTime>("DateOrigin")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("GenreId")
-                        .HasColumnType("int");
-
                     b.Property<byte[]>("Picture")
                         .HasColumnType("varbinary(max)");
 
@@ -90,38 +102,48 @@ namespace AlkemyChallenge.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GenreId");
-
                     b.ToTable("MovieAndSeries");
                 });
 
-            modelBuilder.Entity("CharacterMovieSerie", b =>
+            modelBuilder.Entity("GenreMovieSerie", b =>
                 {
-                    b.Property<int>("CharacterId")
+                    b.Property<int>("GenresId")
                         .HasColumnType("int");
 
                     b.Property<int>("MovieSerieId")
                         .HasColumnType("int");
 
-                    b.HasKey("CharacterId", "MovieSerieId");
+                    b.HasKey("GenresId", "MovieSerieId");
 
                     b.HasIndex("MovieSerieId");
 
-                    b.ToTable("CharacterMovieSerie");
+                    b.ToTable("GenreMovieSerie");
                 });
 
-            modelBuilder.Entity("AlkemyChallenge.Model.MovieSerie", b =>
+            modelBuilder.Entity("AlkemyChallenge.Model.Character_Movie", b =>
+                {
+                    b.HasOne("AlkemyChallenge.Model.Character", "Character")
+                        .WithMany("Character_Movies")
+                        .HasForeignKey("CharacterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AlkemyChallenge.Model.MovieSerie", "MovieSerie")
+                        .WithMany("Character_Movies")
+                        .HasForeignKey("MovieSerieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Character");
+
+                    b.Navigation("MovieSerie");
+                });
+
+            modelBuilder.Entity("GenreMovieSerie", b =>
                 {
                     b.HasOne("AlkemyChallenge.Model.Genre", null)
-                        .WithMany("MovieSerie")
-                        .HasForeignKey("GenreId");
-                });
-
-            modelBuilder.Entity("CharacterMovieSerie", b =>
-                {
-                    b.HasOne("AlkemyChallenge.Model.Character", null)
                         .WithMany()
-                        .HasForeignKey("CharacterId")
+                        .HasForeignKey("GenresId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -132,9 +154,14 @@ namespace AlkemyChallenge.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("AlkemyChallenge.Model.Genre", b =>
+            modelBuilder.Entity("AlkemyChallenge.Model.Character", b =>
                 {
-                    b.Navigation("MovieSerie");
+                    b.Navigation("Character_Movies");
+                });
+
+            modelBuilder.Entity("AlkemyChallenge.Model.MovieSerie", b =>
+                {
+                    b.Navigation("Character_Movies");
                 });
 #pragma warning restore 612, 618
         }
