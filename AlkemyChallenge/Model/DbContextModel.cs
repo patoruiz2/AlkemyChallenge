@@ -10,13 +10,15 @@ namespace AlkemyChallenge.Model
     {
         public DbContextModel(DbContextOptions<DbContextModel> options) : base(options) 
         {
-
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Character_Movie>().HasKey(x => new { x.CharacterId, x.MovieSerieId });
         }
         public DbSet<Character> Characters { get; set; }
         public DbSet<MovieSerie> MovieAndSeries{ get; set; }
         public DbSet<Genre> Genres { get; set; }
-
-
+        public DbSet<Character_Movie> Character_Movies { get; set; }
 
     }
     public class Character
@@ -27,7 +29,7 @@ namespace AlkemyChallenge.Model
         public int Weigth { get; set; }
         public string History { get; set; }
         public byte[] Picture { get; set; }
-        public ICollection<MovieSerie> MovieSeries { get; set; }
+        public List<Character_Movie> Character_Movies { get; set; }
     }
 
     public class MovieSerie
@@ -37,7 +39,7 @@ namespace AlkemyChallenge.Model
         public string Title { get; set; }
         public DateTime DateOrigin { get; set; }
         public int Calification { get; set; }
-        public ICollection<Character> Characters { get; set; }
+        public List<Character_Movie> Character_Movies { get; set; }
         public ICollection<Genre> Genres{ get; set; }
     }
 
@@ -47,6 +49,14 @@ namespace AlkemyChallenge.Model
         public string Name { get; set; }
         public byte[] Picture { get; set; }
         public ICollection<MovieSerie> MovieSerie { get; set; }
+    }
+
+    public class Character_Movie
+    {
+        public int CharacterId { get; set; }
+        public int MovieSerieId { get; set; }
+        public Character Character { get; set; }
+        public MovieSerie MovieSerie { get; set; }
     }
 
 }

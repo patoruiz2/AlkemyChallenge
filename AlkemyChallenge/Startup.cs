@@ -30,7 +30,7 @@ namespace AlkemyChallenge
             services.AddControllers();
 
             //Crear connection string
-            var connection = @"Server=DESKTOP-L6A97NJ;Database=AlkemyChallenge;Trusted_Connection=True;ConnectRetryCount=0 ";
+            var connection = @"Server=DESKTOP-9M150TH;Database=AlkemyChallenge;Trusted_Connection=True;ConnectRetryCount=0 ";
             
             //Conectar a DB en SQL SERVER
             services.AddDbContext<DbContextModel>(options => options.UseSqlServer(connection));
@@ -53,6 +53,7 @@ namespace AlkemyChallenge
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                
             });
         }
     }
