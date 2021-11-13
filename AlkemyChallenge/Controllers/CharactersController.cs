@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace AlkemyChallenge.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("/characters")]
     public class CharactersController : ControllerBase
     {
 
@@ -24,7 +24,7 @@ namespace AlkemyChallenge.Controllers
         }
 
         [HttpGet]
-        [Route("/{name}/{age:int?}/{movie:int?}")]
+        [Route("")]
         public ActionResult Get([FromQuery] string name,[FromQuery] int? age = 0,[FromQuery] int movie = 0)
         {
             try
