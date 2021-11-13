@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlkemyChallenge.Migrations
 {
     [DbContext(typeof(DbContextModel))]
-    [Migration("20211031065833_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20211113033103_NewDB")]
+    partial class NewDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -94,6 +94,9 @@ namespace AlkemyChallenge.Migrations
                     b.Property<DateTime>("DateOrigin")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("GenreId")
+                        .HasColumnType("int");
+
                     b.Property<byte[]>("Picture")
                         .HasColumnType("varbinary(max)");
 
@@ -102,22 +105,10 @@ namespace AlkemyChallenge.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GenreId")
+                        .IsUnique();
+
                     b.ToTable("MovieAndSeries");
-                });
-
-            modelBuilder.Entity("GenreMovieSerie", b =>
-                {
-                    b.Property<int>("GenresId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MovieSerieId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GenresId", "MovieSerieId");
-
-                    b.HasIndex("MovieSerieId");
-
-                    b.ToTable("GenreMovieSerie");
                 });
 
             modelBuilder.Entity("AlkemyChallenge.Model.Character_Movie", b =>
@@ -139,17 +130,11 @@ namespace AlkemyChallenge.Migrations
                     b.Navigation("MovieSerie");
                 });
 
-            modelBuilder.Entity("GenreMovieSerie", b =>
+            modelBuilder.Entity("AlkemyChallenge.Model.MovieSerie", b =>
                 {
                     b.HasOne("AlkemyChallenge.Model.Genre", null)
-                        .WithMany()
-                        .HasForeignKey("GenresId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AlkemyChallenge.Model.MovieSerie", null)
-                        .WithMany()
-                        .HasForeignKey("MovieSerieId")
+                        .WithOne("MovieSerie")
+                        .HasForeignKey("AlkemyChallenge.Model.MovieSerie", "GenreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -157,6 +142,11 @@ namespace AlkemyChallenge.Migrations
             modelBuilder.Entity("AlkemyChallenge.Model.Character", b =>
                 {
                     b.Navigation("Character_Movies");
+                });
+
+            modelBuilder.Entity("AlkemyChallenge.Model.Genre", b =>
+                {
+                    b.Navigation("MovieSerie");
                 });
 
             modelBuilder.Entity("AlkemyChallenge.Model.MovieSerie", b =>

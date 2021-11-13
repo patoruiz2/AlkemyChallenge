@@ -8,7 +8,7 @@ namespace AlkemyChallenge.Model
 {
     public class DbContextModel : DbContext
     {
-        public DbContextModel(DbContextOptions<DbContextModel> options) : base(options) 
+        public DbContextModel(DbContextOptions<DbContextModel> options) : base(options)
         {
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -16,7 +16,7 @@ namespace AlkemyChallenge.Model
             modelBuilder.Entity<Character_Movie>().HasKey(x => new { x.CharacterId, x.MovieSerieId });
         }
         public DbSet<Character> Characters { get; set; }
-        public DbSet<MovieSerie> MovieAndSeries{ get; set; }
+        public DbSet<MovieSerie> MovieAndSeries { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Character_Movie> Character_Movies { get; set; }
 
@@ -40,7 +40,8 @@ namespace AlkemyChallenge.Model
         public DateTime DateOrigin { get; set; }
         public int Calification { get; set; }
         public List<Character_Movie> Character_Movies { get; set; }
-        public ICollection<Genre> Genres{ get; set; }
+        public int GenreId { get; set; }
+
     }
 
     public class Genre
@@ -48,7 +49,7 @@ namespace AlkemyChallenge.Model
         public int Id { get; set; }
         public string Name { get; set; }
         public byte[] Picture { get; set; }
-        public ICollection<MovieSerie> MovieSerie { get; set; }
+        public MovieSerie MovieSerie { get; set; }
     }
 
     public class Character_Movie
