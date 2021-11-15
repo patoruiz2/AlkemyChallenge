@@ -27,11 +27,11 @@ namespace AlkemyChallenge.Model
     {
         public int Id { get; set; }
         [Required]
-        [StringLength(25,ErrorMessage ="The field must be less than {0} characters")]
-        [MinLength(3,ErrorMessage = "The field must be less than {0} characters")]
+        [StringLength(25,ErrorMessage ="The field must be less than {1} characters")]
+        [MinLength(3,ErrorMessage = "The field must be more than {1} characters")]
         public string Name { get; set; }
         [Required]
-        [MaxLength (3,ErrorMessage = "The field must be less than {0} characters")]
+        [MaxLength (3,ErrorMessage = "The field must be less than {1} characters")]
         public int Age { get; set; }
         public int Weigth { get; set; }
         public string History { get; set; }
@@ -44,7 +44,7 @@ namespace AlkemyChallenge.Model
         public int Id { get; set; }
         public byte[] Picture { get; set; }
         [Required]
-        [MinLength(2, ErrorMessage = "The field must be less than {0} characters")]
+        [MinLength(2, ErrorMessage = "The field must be more than {1} characters")]
         public string Title { get; set; }
         [Required]
         public DateTime DateOrigin { get; set; }
@@ -58,7 +58,7 @@ namespace AlkemyChallenge.Model
     {
         public int Id { get; set; }
         [Required]
-        [MinLength(3,ErrorMessage = "The field must be less than {0} characters")]
+        [MinLength(3,ErrorMessage = "The field must be more than {1} characters")]
         public string Name { get; set; }
         public byte[] Picture { get; set; }
         public MovieSerie MovieSerie { get; set; }
@@ -75,7 +75,13 @@ namespace AlkemyChallenge.Model
     public class RegisterUser
     {
         public int Id { get; set; }
+        [Required(ErrorMessage = "This field is required")]
+        [MinLength(2, ErrorMessage = "The field must be more than {1} characters")]
+        [StringLength(25,ErrorMessage = "The field must be less than {1} characters")]
         public string UserName { get; set; }
+        [Required(ErrorMessage = "This field is required")]
+        [MinLength(4, ErrorMessage = "The field must be more than {1} characters")]
+        [StringLength(25, ErrorMessage = "The field must be less than {1} characters")]
         public string Password { get; set; }
         public string Token { get; set; }
     }
