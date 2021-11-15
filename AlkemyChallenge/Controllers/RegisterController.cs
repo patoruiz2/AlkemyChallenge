@@ -1,7 +1,10 @@
-﻿using AlkemyChallenge.Model;
+﻿using AlkemyChallenge.Helper;
+using AlkemyChallenge.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AlkemyChallenge.Controllers
 {
@@ -10,7 +13,7 @@ namespace AlkemyChallenge.Controllers
     public class RegisterController : ControllerBase
     {
         private readonly DbContextModel _context;
-
+  
         public RegisterController(DbContextModel context)
         {
             _context = context;
@@ -20,7 +23,7 @@ namespace AlkemyChallenge.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState.Values);
+                return BadRequest(ErrorHelper.GetModelStateErrors(ModelState));
             }
 
             user.Token = Convert.ToBase64String(Guid.NewGuid().ToByteArray());

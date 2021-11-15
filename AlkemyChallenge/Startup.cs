@@ -34,6 +34,12 @@ namespace AlkemyChallenge
             
             //Conectar a DB en SQL SERVER
             services.AddDbContext<DbContextModel>(options => options.UseSqlServer(connection));
+
+            //Permite filtrar por "ModelState.IsValid"
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
