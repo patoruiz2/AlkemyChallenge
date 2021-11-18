@@ -24,41 +24,46 @@ namespace AlkemyChallenge.Controllers
         }
 
         [HttpGet]
-        [Route("")]
         public ActionResult Get([FromQuery] string name,[FromQuery] int? age = 0,[FromQuery] int movie = 0)
         {
             try
             {
-               if(name != null && (age == 0 && movie == 0))
+                if (ModelState.IsValid)
                 {
-                    List<Character> nameCharac = (from c in _context.Characters
-                                                     where c.Name == name
-                                                     select c).ToList();
-                    return Ok(nameCharac);
+                   if(name != null && (age == 0 && movie == 0))
+                    {
+                        List<Character> nameCharac = (from c in _context.Characters
+                                                         where c.Name == name
+                                                         select c).ToList();
+                        return Ok(nameCharac);
 
-                }else if(age > 0 && (name == null && movie == 0))
-                {
-                    List<Character> ageCharac = (from c in _context.Characters
-                                                where c.Age == age
-                                                select c).ToList();
-                    return Ok(ageCharac);
-                }
-                else if(movie > 0 && (age==0 && name == null))
-                {
-                    var movieList = _context.MovieAndSeries.Where(m => m.Id == movie).Include(cm => cm.Character_Movies)
-                    .ThenInclude(c => c.Character).ToList();
+                    }else if(age > 0 && (name == null && movie == 0))
+                    {
+                        List<Character> ageCharac = (from c in _context.Characters
+                                                    where c.Age == age
+                                                    select c).ToList();
+                        return Ok(ageCharac);
+                    }
+                    else if(movie > 0 && (age==0 && name == null))
+                    {
+                        var movieList = _context.MovieAndSeries.Where(m => m.Id == movie).Include(cm => cm.Character_Movies)
+                        .ThenInclude(c => c.Character).ToList();
 
-                    return Ok(movieList);
-                }else if(name != null || age != 0 || movie != 0)
-                {
-                    return NotFound("Ruta no existente");
-                }
-                var response = from c in _context.Characters
-                               select new { c.Id,c.Name, c.Picture };
+                        return Ok(movieList);
+                    }else if(name != null || age != 0 || movie != 0)
+                    {
+                        return NotFound("Ruta no existente");
+                    }
+                    var response = from c in _context.Characters
+                                   select new { c.Id,c.Name, c.Picture };
             
-                return Ok(response);
+                    return Ok(response);
 
-            }catch(Exception ex)
+                }
+                return NotFound();
+
+            }
+            catch(Exception ex)
             {
                 return NotFound(ex.Message);
             }

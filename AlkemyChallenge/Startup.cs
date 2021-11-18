@@ -30,10 +30,16 @@ namespace AlkemyChallenge
             services.AddControllers();
 
             //Crear connection string
-            var connection = @"Server=DESKTOP-9M150TH;Database=AlkemyChallenge;Trusted_Connection=True;ConnectRetryCount=0 ";
+            var connection = @"Server=DESKTOP-0UPNFOE;Database=AlkemyChallenge;Trusted_Connection=True;ConnectRetryCount=0 ";
             
             //Conectar a DB en SQL SERVER
             services.AddDbContext<DbContextModel>(options => options.UseSqlServer(connection));
+
+            //Permite filtrar por "ModelState.IsValid"
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,12 +20,18 @@ namespace AlkemyChallenge.Model
         public DbSet<MovieSerie> MovieAndSeries { get; set; }
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Character_Movie> Character_Movies { get; set; }
+        public DbSet<RegisterUser> RegisterUsers { get; set; }
 
     }
     public class Character
     {
         public int Id { get; set; }
+        [Required]
+        [StringLength(25,ErrorMessage ="The field must be less than {1} characters")]
+        [MinLength(3,ErrorMessage = "The field must be more than {1} characters")]
         public string Name { get; set; }
+        [Required]
+        [MaxLength (3,ErrorMessage = "The field must be less than {1} characters")]
         public int Age { get; set; }
         public int Weigth { get; set; }
         public string History { get; set; }
@@ -36,7 +43,10 @@ namespace AlkemyChallenge.Model
     {
         public int Id { get; set; }
         public byte[] Picture { get; set; }
+        [Required]
+        [MinLength(2, ErrorMessage = "The field must be more than {1} characters")]
         public string Title { get; set; }
+        [Required]
         public DateTime DateOrigin { get; set; }
         public int Calification { get; set; }
         public List<Character_Movie> Character_Movies { get; set; }
@@ -47,6 +57,8 @@ namespace AlkemyChallenge.Model
     public class Genre
     {
         public int Id { get; set; }
+        [Required]
+        [MinLength(3,ErrorMessage = "The field must be more than {1} characters")]
         public string Name { get; set; }
         public byte[] Picture { get; set; }
         public MovieSerie MovieSerie { get; set; }
@@ -58,6 +70,20 @@ namespace AlkemyChallenge.Model
         public int MovieSerieId { get; set; }
         public Character Character { get; set; }
         public MovieSerie MovieSerie { get; set; }
+    }
+
+    public class RegisterUser
+    {
+        public int Id { get; set; }
+        [Required(ErrorMessage = "This field is required")]
+        [MinLength(2, ErrorMessage = "The field must be more than {1} characters")]
+        [StringLength(25,ErrorMessage = "The field must be less than {1} characters")]
+        public string UserName { get; set; }
+        [Required(ErrorMessage = "This field is required")]
+        [MinLength(4, ErrorMessage = "The field must be more than {1} characters")]
+        [StringLength(25, ErrorMessage = "The field must be less than {1} characters")]
+        public string Password { get; set; }
+        public string Token { get; set; }
     }
 
 }
