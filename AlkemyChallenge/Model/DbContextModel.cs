@@ -15,6 +15,16 @@ namespace AlkemyChallenge.Model
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Character_Movie>().HasKey(x => new { x.CharacterId, x.MovieSerieId });
+            modelBuilder.Entity<Movie_Genre>().HasKey(x => new { x.GenreId, x.MovieSerieId });
+
+            modelBuilder.Entity<Character_Movie>()
+                .HasOne(cm => cm.Character)
+                .WithMany(c => c.Character_Movies)
+                .HasForeignKey(cm => cm.CharacterId);
+            modelBuilder.Entity<Character_Movie>()
+                .HasOne(cm => cm.MovieSerie)
+                .WithMany(m => m.Character_Movies)
+                .HasForeignKey(cm => cm.MovieSerieId);
         }
         public DbSet<Character> Characters { get; set; }
         public DbSet<MovieSerie> MovieAndSeries { get; set; }
@@ -31,7 +41,6 @@ namespace AlkemyChallenge.Model
         [MinLength(3,ErrorMessage = "The field must be more than {1} characters")]
         public string Name { get; set; }
         [Required]
-        [MaxLength (3,ErrorMessage = "The field must be less than {1} characters")]
         public int Age { get; set; }
         public int Weigth { get; set; }
         public string History { get; set; }
@@ -50,7 +59,7 @@ namespace AlkemyChallenge.Model
         public DateTime DateOrigin { get; set; }
         public int Calification { get; set; }
         public List<Character_Movie> Character_Movies { get; set; }
-        public int GenreId { get; set; }
+        public List<Movie_Genre> Movie_Genres { get; set; }
 
     }
 
@@ -61,6 +70,14 @@ namespace AlkemyChallenge.Model
         [MinLength(3,ErrorMessage = "The field must be more than {1} characters")]
         public string Name { get; set; }
         public byte[] Picture { get; set; }
+        public List<Movie_Genre> Movie_Genres { get; set; }
+    }
+
+    public class Movie_Genre
+    {
+        public int GenreId { get; set; }
+        public int MovieSerieId { get; set; }
+        public Genre Genre { get; set; }
         public MovieSerie MovieSerie { get; set; }
     }
 

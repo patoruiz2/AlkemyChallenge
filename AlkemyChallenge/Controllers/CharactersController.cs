@@ -72,27 +72,28 @@ namespace AlkemyChallenge.Controllers
         }
 
         [HttpPost("send/character")]
-        public Character PostCharacter(Character character)
+        public IActionResult PostCharacter(Character model)
         {
-            
-            var send = new Character()
+            //var movieSerie= new MovieSerie() {Title}
+            var character = new Character()
             {
                 
-                Age = character.Age,
-                History = character.History,
-                Name = character.Name,
-                Picture = character.Picture,
-                Weigth = character.Weigth,
-
+                Age = model.Age,
+                History = model.History,
+                Name = model.Name,
+                Picture = model.Picture,
+                Weigth = model.Weigth,
+                Character_Movies = model.Character_Movies
             };
-            _context.Add(send);
+            _context.Add(character);
             _context.SaveChanges();
-            return send;
+            return Ok(character);
         }
 
         [HttpPost("send/movieserie")]
         public MovieSerie PostMovie(MovieSerie movieSerie)
         {
+            
             var send = new MovieSerie()
             {
                 
@@ -100,26 +101,35 @@ namespace AlkemyChallenge.Controllers
                Title = movieSerie.Title,
                DateOrigin = movieSerie.DateOrigin,
                Calification = movieSerie.Calification,
-               
 
             };
-            _context.Add(send);
+            _context.AddRange(send);
             _context.SaveChanges();
             return send;
         }
         [HttpPost("send/charactermovie")]
-        public Character_Movie PostCharacterMovie(MovieSerie movieSerie)
+        public IActionResult PostCharacterMovie([FromQuery]int idCharacter, [FromQuery]int idMovieSerie)
         {
-            //var character = _context.Characters.Where(c => c.Id == characters.Id).FirstOrDefault();
-            var movieSeries = _context.MovieAndSeries.Where(ms => ms.Id == movieSerie.Id).ToList();
-            var send = new Character_Movie()
+            try
             {
-                //CharacterId = character.Id,
-                MovieSerieId = movieSerie.Id,
-            };
-            _context.Add(send);
-            _context.SaveChanges();
-            return send;
+                var character = _context.Characters.Where(c => c.Id == idCharacter).FirstOrDefault();
+                var movieSerie = _context.MovieAndSeries.Where(ms => ms.Id == idMovieSerie).ToList();
+                var characterMovie = new Character_Movie()
+                {
+                    CharacterId = idCharacter,
+                    MovieSerieId = idMovieSerie,
+                };
+
+                _context.Add(characterMovie);
+                _context.SaveChanges();
+
+                return Ok(characterMovie);
+
+            }catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
     }
 }
