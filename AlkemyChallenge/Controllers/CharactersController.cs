@@ -17,53 +17,53 @@ namespace AlkemyChallenge.Controllers
 
         private readonly DbContextModel _context;
 
-        
+
         public CharactersController(DbContextModel context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public ActionResult Get([FromQuery] string name,[FromQuery] int? age = 0,[FromQuery] int movie = 0)
+        public ActionResult Get([FromQuery] string name, [FromQuery] int? age = 0, [FromQuery] int movie = 0)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                   if(name != null && (age == 0 && movie == 0))
+                    if (name != null && (age == 0 && movie == 0))
                     {
                         List<Character> nameCharac = (from c in _context.Characters
-                                                         where c.Name == name
-                                                         select c).ToList();
+                                                      where c.Name == name
+                                                      select c).ToList();
                         return Ok(nameCharac);
 
-                    }else if(age > 0 && (name == null && movie == 0))
+                    } else if (age > 0 && (name == null && movie == 0))
                     {
                         List<Character> ageCharac = (from c in _context.Characters
-                                                    where c.Age == age
-                                                    select c).ToList();
+                                                     where c.Age == age
+                                                     select c).ToList();
                         return Ok(ageCharac);
                     }
-                    else if(movie > 0 && (age==0 && name == null))
+                    else if (movie > 0 && (age == 0 && name == null))
                     {
                         var movieList = _context.MovieAndSeries.Where(m => m.Id == movie).Include(cm => cm.Character_Movies)
                         .ThenInclude(c => c.Character).ToList();
 
                         return Ok(movieList);
-                    }else if(name != null || age != 0 || movie != 0)
+                    } else if (name != null || age != 0 || movie != 0)
                     {
                         return NotFound("Ruta no existente");
                     }
                     var response = from c in _context.Characters
-                                   select new { c.Id,c.Name, c.Picture };
-            
+                                   select new { c.Id, c.Name, c.Picture };
+
                     return Ok(response);
 
                 }
                 return NotFound();
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return NotFound(ex.Message);
             }
@@ -74,10 +74,10 @@ namespace AlkemyChallenge.Controllers
         [HttpPost("send/character")]
         public IActionResult PostCharacter(Character model)
         {
-            //var movieSerie= new MovieSerie() {Title}
+
             var character = new Character()
             {
-                
+
                 Age = model.Age,
                 History = model.History,
                 Name = model.Name,
@@ -91,45 +91,24 @@ namespace AlkemyChallenge.Controllers
         }
 
         [HttpPost("send/movieserie")]
-        public MovieSerie PostMovie(MovieSerie movieSerie)
+        public IActionResult PostMovie(MovieSerie movieSerie)
         {
-            
+
             var send = new MovieSerie()
             {
-                
-               Picture= movieSerie.Picture,
-               Title = movieSerie.Title,
-               DateOrigin = movieSerie.DateOrigin,
-               Calification = movieSerie.Calification,
 
+                Picture = movieSerie.Picture,
+                Title = movieSerie.Title,
+                DateOrigin = movieSerie.DateOrigin,
+                Calification = movieSerie.Calification,
+                Character_Movies = movieSerie.Character_Movies,
+                Movie_Genres = movieSerie.Movie_Genres
             };
             _context.AddRange(send);
             _context.SaveChanges();
-            return send;
+            return Ok(send);
         }
-        [HttpPost("send/charactermovie")]
-        public IActionResult PostCharacterMovie([FromQuery]int idCharacter, [FromQuery]int idMovieSerie)
-        {
-            try
-            {
-                var character = _context.Characters.Where(c => c.Id == idCharacter).FirstOrDefault();
-                var movieSerie = _context.MovieAndSeries.Where(ms => ms.Id == idMovieSerie).ToList();
-                var characterMovie = new Character_Movie()
-                {
-                    CharacterId = idCharacter,
-                    MovieSerieId = idMovieSerie,
-                };
 
-                _context.Add(characterMovie);
-                _context.SaveChanges();
-
-                return Ok(characterMovie);
-
-            }catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-        }
+        
     }
 }
