@@ -23,6 +23,7 @@ namespace AlkemyChallenge.Controllers
             _context = context;
         }
 
+        //LIST
         [HttpGet]
         public ActionResult Get([FromQuery] string name,[FromQuery] int? age = 0,[FromQuery] int movie = 0)
         {
@@ -70,7 +71,7 @@ namespace AlkemyChallenge.Controllers
 
 
         }
-
+        //CREATE
         [HttpPost("send/character")]
         public IActionResult PostCharacter(Character model)
         {
@@ -85,8 +86,10 @@ namespace AlkemyChallenge.Controllers
                 Weigth = model.Weigth,
                 Character_Movies = model.Character_Movies
             };
+
             _context.Add(character);
             _context.SaveChanges();
+
             return Ok(character);
         }
 
@@ -107,29 +110,84 @@ namespace AlkemyChallenge.Controllers
             _context.SaveChanges();
             return send;
         }
-        [HttpPost("send/charactermovie")]
-        public IActionResult PostCharacterMovie([FromQuery]int idCharacter, [FromQuery]int idMovieSerie)
+
+
+        //DELETE
+        [HttpDelete("{id}")]
+        public IActionResult DeleteCharacter(int id)
         {
+            var entityC = (from c in _context.Characters
+                           where c.Id == id
+                           select c).FirstOrDefault();
+            _context.Remove(entityC);
+            _context.SaveChanges();
+            return Ok(entityC);
+        }
+
+        //UPDATE
+        [HttpPut("{id}")]
+        public IActionResult ModifyCharacter(int id,[FromBody] Character model)
+        {
+            var entityC = _context.Characters.Where(c => c.Id == id)
+                .Include(cm => cm.Character_Movies).ThenInclude(cm => cm.MovieSerie)
+                .FirstOrDefault();
+            if (entityC.Character_Movies.Any())
+            {
+                entityC.Character_Movies.Clear();
+            }
             try
             {
-                var character = _context.Characters.Where(c => c.Id == idCharacter).FirstOrDefault();
-                var movieSerie = _context.MovieAndSeries.Where(ms => ms.Id == idMovieSerie).ToList();
-                var characterMovie = new Character_Movie()
-                {
-                    CharacterId = idCharacter,
-                    MovieSerieId = idMovieSerie,
-                };
+                entityC.Weigth = model.Weigth;
+                entityC.Name = model.Name;
+                entityC.Age = model.Age;
+                entityC.Picture = model.Picture;
+                entityC.History = model.History;
+                entityC.Character_Movies = model.Character_Movies;
 
-                _context.Add(characterMovie);
+
+                _context.Entry(entityC).State = EntityState.Modified;
                 _context.SaveChanges();
+                return Ok(entityC);
 
-                return Ok(characterMovie);
-
-            }catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
             }
-
+            catch (Exception ex)
+            {
+                return NotFound(ex.InnerException);
+            }
+        }
+        //DETAILS
+        [HttpGet("{id}")]
+        public IActionResult DetailCharacter(int id)
+        {
+            var entityC = _context.Characters.Where(c => c.Id == id)
+                .Include(cm => cm.Character_Movies).ThenInclude(cm => cm.MovieSerie)
+                .FirstOrDefault();
+            return Ok(entityC);
         }
     }
 }
+
+        //[HttpPost("send/charactermovie")]
+        //public IActionResult PostCharacterMovie([FromQuery]int idCharacter, [FromQuery]int idMovieSerie)
+        //{
+        //    try
+        //    {
+        //        var character = _context.Characters.Where(c => c.Id == idCharacter).FirstOrDefault();
+        //        var movieSerie = _context.MovieAndSeries.Where(ms => ms.Id == idMovieSerie).ToList();
+        //        var characterMovie = new Character_Movie()
+        //        {
+        //            CharacterId = idCharacter,
+        //            MovieSerieId = idMovieSerie,
+        //        };
+
+        //        _context.Add(characterMovie);
+        //        _context.SaveChanges();
+
+        //        return Ok(characterMovie);
+
+        //    }catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+
+//        }
