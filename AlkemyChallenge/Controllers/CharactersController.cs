@@ -93,25 +93,6 @@ namespace AlkemyChallenge.Controllers
             return Ok(character);
         }
 
-        [HttpPost("send/movieserie")]
-        public IActionResult PostMovie(MovieSerie movieSerie)
-        {
-
-            var send = new MovieSerie()
-            {
-
-                Picture = movieSerie.Picture,
-                Title = movieSerie.Title,
-                DateOrigin = movieSerie.DateOrigin,
-                Calification = movieSerie.Calification,
-                Character_Movies = movieSerie.Character_Movies,
-                Movie_Genres = movieSerie.Movie_Genres
-            };
-            _context.AddRange(send);
-            _context.SaveChanges();
-            return Ok(send);
-        }
-
         //DELETE
         [HttpDelete("{id}")]
         public IActionResult DeleteCharacter(int id)
