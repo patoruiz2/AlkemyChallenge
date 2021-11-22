@@ -4,14 +4,16 @@ using AlkemyChallenge.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AlkemyChallenge.Migrations
 {
     [DbContext(typeof(DbContextModel))]
-    partial class DbContextModelModelSnapshot : ModelSnapshot
+    [Migration("20211120033226_ManyToMany")]
+    partial class ManyToMany
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -96,6 +98,9 @@ namespace AlkemyChallenge.Migrations
                     b.Property<DateTime>("DateOrigin")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("GenreId")
+                        .HasColumnType("int");
+
                     b.Property<byte[]>("Picture")
                         .HasColumnType("varbinary(max)");
 
@@ -105,22 +110,10 @@ namespace AlkemyChallenge.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GenreId")
+                        .IsUnique();
+
                     b.ToTable("MovieAndSeries");
-                });
-
-            modelBuilder.Entity("AlkemyChallenge.Model.Movie_Genre", b =>
-                {
-                    b.Property<int>("GenreId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MovieSerieId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GenreId", "MovieSerieId");
-
-                    b.HasIndex("MovieSerieId");
-
-                    b.ToTable("Movie_Genre");
                 });
 
             modelBuilder.Entity("AlkemyChallenge.Model.RegisterUser", b =>
@@ -167,23 +160,13 @@ namespace AlkemyChallenge.Migrations
                     b.Navigation("MovieSerie");
                 });
 
-            modelBuilder.Entity("AlkemyChallenge.Model.Movie_Genre", b =>
+            modelBuilder.Entity("AlkemyChallenge.Model.MovieSerie", b =>
                 {
-                    b.HasOne("AlkemyChallenge.Model.Genre", "Genre")
-                        .WithMany("Movie_Genres")
-                        .HasForeignKey("GenreId")
+                    b.HasOne("AlkemyChallenge.Model.Genre", null)
+                        .WithOne("MovieSerie")
+                        .HasForeignKey("AlkemyChallenge.Model.MovieSerie", "GenreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("AlkemyChallenge.Model.MovieSerie", "MovieSerie")
-                        .WithMany("Movie_Genres")
-                        .HasForeignKey("MovieSerieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Genre");
-
-                    b.Navigation("MovieSerie");
                 });
 
             modelBuilder.Entity("AlkemyChallenge.Model.Character", b =>
@@ -193,14 +176,12 @@ namespace AlkemyChallenge.Migrations
 
             modelBuilder.Entity("AlkemyChallenge.Model.Genre", b =>
                 {
-                    b.Navigation("Movie_Genres");
+                    b.Navigation("MovieSerie");
                 });
 
             modelBuilder.Entity("AlkemyChallenge.Model.MovieSerie", b =>
                 {
                     b.Navigation("Character_Movies");
-
-                    b.Navigation("Movie_Genres");
                 });
 #pragma warning restore 612, 618
         }
