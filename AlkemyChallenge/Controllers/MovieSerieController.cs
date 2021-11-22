@@ -1,6 +1,7 @@
 ﻿using AlkemyChallenge.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace AlkemyChallenge.Controllers
         {
             _context = context;
         }
+        //LIST
         [HttpGet]
         public ActionResult Get([FromQuery] string name, [FromQuery] int idGenre, [FromQuery] string orderFilter)
         {
@@ -68,6 +70,68 @@ namespace AlkemyChallenge.Controllers
                 return NotFound(ex.Message);
             }
 
+        }
+        //CREATE
+        [HttpPost("create")]
+        public IActionResult PostMovie(MovieSerie model)
+        {
+
+            var movieSerie = new MovieSerie()
+            {
+
+                Picture = model.Picture,
+                Title = model.Title,
+                DateOrigin = model.DateOrigin,
+                Calification = model.Calification,
+                Character_Movies = model.Character_Movies,
+                Movie_Genres = model.Movie_Genres
+            };
+            _context.Add(movieSerie);
+            _context.SaveChanges();
+            return Ok(movieSerie);
+        }
+        //UPDATE
+        [HttpPut("{id}")]
+        public IActionResult UpdateMovie(int id, [FromBody] MovieSerie model)
+        {
+            var entityMS = _context.MovieAndSeries.Where(ms => ms.Id == id)
+                .Include(cm => cm.Character_Movies)
+                .ThenInclude(cm => cm.Character)
+                .Include(mg => mg.Movie_Genres).ThenInclude(mg => mg.Genre)
+                .FirstOrDefault();
+            
+            if (entityMS.Character_Movies.Any())
+            {
+                entityMS.Character_Movies.Clear();
+
+                if (entityMS.Movie_Genres.Any())
+                {
+                    entityMS.Movie_Genres.Clear();
+                }
+            }
+            entityMS.Title = model.Title;
+            entityMS.Picture = model.Picture;
+            entityMS.DateOrigin = model.DateOrigin;
+            entityMS.Calification= model.Calification;
+            entityMS.Character_Movies= model.Character_Movies;
+            entityMS.Movie_Genres= model.Movie_Genres;
+
+
+            _context.Entry(entityMS).State = EntityState.Modified;
+            _context.SaveChanges();
+
+            return Ok(entityMS);
+        }
+        //DELETE
+        [HttpDelete("{id}")]
+        public IActionResult DeleteMovie(int id)
+        {
+            var entityMS = _context.MovieAndSeries.Where(ms => ms.Id == id)
+                .FirstOrDefault();
+            
+            _context.Remove(entityMS);
+            _context.SaveChanges();
+            return Ok();
         }
     }
 }
