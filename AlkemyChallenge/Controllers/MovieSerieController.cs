@@ -20,7 +20,7 @@ namespace AlkemyChallenge.Controllers
         }
         //LIST
         [HttpGet]
-        public ActionResult Get([FromQuery] string name, [FromQuery] int idGenre, [FromQuery] string orderFilter)
+        public IActionResult Get([FromQuery] string name, [FromQuery] int idGenre, [FromQuery] string orderFilter)
         {
             try
             {
@@ -132,6 +132,22 @@ namespace AlkemyChallenge.Controllers
             _context.Remove(entityMS);
             _context.SaveChanges();
             return Ok();
+        }
+        //DETAILS
+        [HttpGet("{id}")]
+        public IActionResult DetailsMovie(int id)
+        {
+            MovieSerie entityMS = _context.MovieAndSeries.Where(ms => ms.Id == id)
+                .Include(ms => ms.Character_Movies).ThenInclude(cm => cm.Character)
+                .Include(ms => ms.Movie_Genres).ThenInclude(gm => gm.Genre)
+                .FirstOrDefault();
+            
+            if(entityMS == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(entityMS);
         }
     }
 }
