@@ -16,12 +16,6 @@ namespace AlkemyChallenge.Helper
         {
             
             var apiKey = Environment.GetEnvironmentVariable("API_KEY_ALKEMYCHALLENGE");
-            
-            if (apiKey == null)
-            {
-                Environment.SetEnvironmentVariable("API_KEY_ALKEMYCHALLENGE",
-                    "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");
-            }
 
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress(model.From, "Patricio Ruiz");
