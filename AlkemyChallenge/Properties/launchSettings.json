@@ -15,7 +15,7 @@
       "launchUrl": "api/characters",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "API_KEY_ALKEMYCHALLENGE": "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"
+        "API_KEY_ALKEMYCHALLENGE": ""//InsertApiKey
       }
     },
     "AlkemyChallenge": {
@@ -25,7 +25,7 @@
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "API_KEY_ALKEMYCHALLENGE": "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"
+        "API_KEY_ALKEMYCHALLENGE": ""
 
       }
     }
