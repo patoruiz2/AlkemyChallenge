@@ -14,7 +14,8 @@
       "launchBrowser": true,
       "launchUrl": "api/characters",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "API_KEY_ALKEMYCHALLENGE": "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"
       }
     },
     "AlkemyChallenge": {
@@ -23,7 +24,9 @@
       "launchUrl": "api/characters",
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "API_KEY_ALKEMYCHALLENGE": "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"
+
       }
     }
   }
