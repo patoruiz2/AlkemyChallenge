@@ -101,6 +101,9 @@ namespace AlkemyChallenge.Model
         [StringLength(25, ErrorMessage = "The field must be less than {1} characters")]
         public string Password { get; set; }
         public string Token { get; set; }
+        [Required]
+        [EmailAddress]
+        public string EmailAdress { get; set; }
     }
 
 }
