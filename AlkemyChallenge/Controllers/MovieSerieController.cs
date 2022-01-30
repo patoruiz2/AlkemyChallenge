@@ -1,4 +1,5 @@
 ﻿using AlkemyChallenge.Model;
+using AlkemyChallenge.BL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ namespace AlkemyChallenge.Controllers
     public class MovieSerieController : ControllerBase
     {
         private readonly DbContextModel _context;
+        private readonly MovieSerieLogic _bussinessLogic = new MovieSerieLogic();
         public MovieSerieController(DbContextModel context)
         {
             _context = context;
@@ -22,132 +24,44 @@ namespace AlkemyChallenge.Controllers
         [HttpGet]
         public IActionResult Get([FromQuery] string name, [FromQuery] int idGenre, [FromQuery] string orderFilter)
         {
-            try
-            {
-                if (name != null && (idGenre == 0 && orderFilter == null))
-                {
-                    List<MovieSerie> nameCharac = (from c in _context.MovieAndSeries
-                                                  where c.Title == name
-                                                  select c).ToList();
-                    return Ok(nameCharac);
-
-                }
-                else if (idGenre > 0 && (name == null && orderFilter == null))
-                {
-                    List<MovieSerie> ageCharac = (from c in _context.MovieAndSeries
-                                                 where c.Id == idGenre
-                                                 select c).ToList();
-                    return Ok(ageCharac);
-                }
-                else if (orderFilter != null && (idGenre == 0 && name == null))
-                {
-                    switch (orderFilter)
-                    {
-                        case "asc":
-                            var movieAsc = (from mo in _context.MovieAndSeries
-                                            orderby mo.DateOrigin ascending
-                                            select mo).ToList();
-                            return Ok(movieAsc);
-                        case "desc":
-                            var movieDesc = (from mo in _context.MovieAndSeries
-                                             orderby mo.DateOrigin descending
-                                             select mo).ToList();
-                            return Ok(movieDesc);
-                    }
-                }
-                else if (name != null || idGenre != 0 || orderFilter != null)
-                {
-                    return NotFound("Ruta no existente");
-                }
-                var response = from c in _context.MovieAndSeries
-                               select new { c.Id, c.Title, c.Picture };
-
-                return Ok(response);
-
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
-
+            var response = _bussinessLogic.Get(name, idGenre, orderFilter, _context);
+            if( response == null)return NotFound(response.ToString());
+            return Ok(response);
         }
         //CREATE
         [HttpPost("create")]
         public IActionResult PostMovie(MovieSerie model)
         {
-
-            var movieSerie = new MovieSerie()
-            {
-
-                Picture = model.Picture,
-                Title = model.Title,
-                DateOrigin = model.DateOrigin,
-                Calification = model.Calification,
-                Character_Movies = model.Character_Movies,
-                Movie_Genres = model.Movie_Genres
-            };
-            _context.Add(movieSerie);
+            var movieSerieCreate = _bussinessLogic.Create(model);
+            _context.Add(movieSerieCreate);
             _context.SaveChanges();
-            return Ok(movieSerie);
+            return Ok(movieSerieCreate);
         }
         //UPDATE
         [HttpPut("{id}")]
         public IActionResult UpdateMovie(int id, [FromBody] MovieSerie model)
         {
-            var entityMS = _context.MovieAndSeries.Where(ms => ms.Id == id)
-                .Include(cm => cm.Character_Movies)
-                .ThenInclude(cm => cm.Character)
-                .Include(mg => mg.Movie_Genres).ThenInclude(mg => mg.Genre)
-                .FirstOrDefault();
-            
-            if (entityMS.Character_Movies.Any())
-            {
-                entityMS.Character_Movies.Clear();
-
-                if (entityMS.Movie_Genres.Any())
-                {
-                    entityMS.Movie_Genres.Clear();
-                }
-            }
-            entityMS.Title = model.Title;
-            entityMS.Picture = model.Picture;
-            entityMS.DateOrigin = model.DateOrigin;
-            entityMS.Calification= model.Calification;
-            entityMS.Character_Movies= model.Character_Movies;
-            entityMS.Movie_Genres= model.Movie_Genres;
-
-
-            _context.Entry(entityMS).State = EntityState.Modified;
+            var entityModify = _bussinessLogic.Update(id, model, _context);
+            _context.Entry(entityModify).State = EntityState.Modified;
             _context.SaveChanges();
-
-            return Ok(entityMS);
+            return Ok(entityModify);
         }
         //DELETE
         [HttpDelete("{id}")]
-        public IActionResult DeleteMovie(int id)
+        public IActionResult DeleteMovie( int id )
         {
-            var entityMS = _context.MovieAndSeries.Where(ms => ms.Id == id)
-                .FirstOrDefault();
-            
-            _context.Remove(entityMS);
+            var entityDeleted = _bussinessLogic.Delete( id, _context );
+            _context.Remove(entityDeleted);
             _context.SaveChanges();
             return Ok();
         }
         //DETAILS
         [HttpGet("{id}")]
-        public IActionResult DetailsMovie(int id)
+        public IActionResult DetailsMovie( int id )
         {
-            MovieSerie entityMS = _context.MovieAndSeries.Where(ms => ms.Id == id)
-                .Include(ms => ms.Character_Movies).ThenInclude(cm => cm.Character)
-                .Include(ms => ms.Movie_Genres).ThenInclude(gm => gm.Genre)
-                .FirstOrDefault();
-            
-            if(entityMS == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(entityMS);
+            var entityDetails = _bussinessLogic.Details(id, _context);
+            if( entityDetails == null )return NotFound();
+            return Ok( entityDetails );
         }
     }
 }

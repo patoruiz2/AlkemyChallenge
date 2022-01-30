@@ -1,6 +1,7 @@
 ﻿using AlkemyChallenge.Helper;
 using AlkemyChallenge.Model;
 using AlkemyChallenge.Model.ViewModel;
+using AlkemyChallenge.BL;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,30 +13,19 @@ namespace AlkemyChallenge.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
+        private LoginLogic _loginLogic = new LoginLogic();
         private readonly DbContextModel _context;
-
         public LoginController(DbContextModel context)
         {
             _context = context;
         }
-
         [HttpPost]
-        public IActionResult Post(LoginViewModel user)
+        public IActionResult Post( LoginViewModel model )
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ErrorHelper.GetModelStateErrors(ModelState));
-            }
-            RegisterUser registerUser = _context.RegisterUsers.Where(x => x.UserName == user.UserName)
-                .Where(t => t.Token != null)
-                .Where(p => p.Password == user.Password)
-                .FirstOrDefault();
-
-            if (registerUser == null)
-            {
-                return NotFound(new {Message = "User not Found"});
-            }
-            return Ok(registerUser.Token = Convert.ToBase64String(Guid.NewGuid().ToByteArray()));
+            if ( !ModelState.IsValid )return BadRequest(ErrorHelper.GetModelStateErrors( ModelState ));
+            var user = _loginLogic.LogIn( model, _context );
+            if ( user == null )return NotFound ( new { Message = "User not Found" } );
+            return Ok( user );
         }
     }
 }
